@@ -1,0 +1,23 @@
+{
+  "name": "edtech-platform",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "build": "npm run build --workspace=apps/backend && npm run build --workspace=apps/frontend",
+    "db:generate": "npm run db:generate --workspace=apps/backend",
+    "db:migrate": "npm run db:migrate --workspace=apps/backend",
+    "db:seed": "npm run db:seed --workspace=apps/backend",
+    "db:studio": "npm run db:studio --workspace=apps/backend",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "lint": "npm run lint --workspaces",
+    "clean": "rimraf apps/*/node_modules apps/*/.next apps/*/dist node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  }
+}

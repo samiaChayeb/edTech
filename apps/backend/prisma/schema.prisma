@@ -1,0 +1,204 @@
+// ── Prisma Schema ── EdTech Platform
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ────────────────────────────────────
+// Enums
+// ────────────────────────────────────
+enum Role {
+  ADMIN
+  PROFESSOR
+  STUDENT
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum DocumentType {
+  PDF
+  DOC
+  DOCX
+  IMAGE
+  OTHER
+}
+
+// ────────────────────────────────────
+// Models
+// ────────────────────────────────────
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  firstName      String
+  lastName       String
+  role           Role     @default(STUDENT)
+  avatar         String?
+  refreshToken   String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  coursesCreated  Course[]         @relation("CourseAuthor")
+  enrollments     Enrollment[]
+  messages        Message[]
+  documents       Document[]
+  payments        Payment[]
+  classroomOwned  Classroom[]      @relation("ClassroomOwner")
+  participants    ClassroomParticipant[]
+
+  @@map("users")
+}
+
+model Course {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  thumbnail   String?
+  price       Float        @default(0)
+  status      CourseStatus @default(DRAFT)
+  authorId    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  author      User         @relation("CourseAuthor", fields: [authorId], references: [id])
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  documents   Document[]
+  payments    Payment[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  videoUrl    String?  // local path to uploaded video
+  duration    Int?     // seconds
+  order       Int      @default(0)
+  courseId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("lessons")
+}
+
+model Enrollment {
+  id        String           @id @default(uuid())
+  userId    String
+  courseId   String
+  status    EnrollmentStatus @default(PENDING)
+  progress  Float            @default(0)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  user      User   @relation(fields: [userId], references: [id])
+  course    Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model Classroom {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  ownerId     String
+  courseId     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner        User                    @relation("ClassroomOwner", fields: [ownerId], references: [id])
+  participants ClassroomParticipant[]
+  messages     Message[]
+
+  @@map("classrooms")
+}
+
+model ClassroomParticipant {
+  id          String   @id @default(uuid())
+  userId      String
+  classroomId String
+  joinedAt    DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classroomId])
+  @@map("classroom_participants")
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  content     String
+  userId      String
+  classroomId String
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Document {
+  id          String       @id @default(uuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  type        DocumentType @default(OTHER)
+  filePath    String
+  userId      String
+  courseId     String?
+  createdAt   DateTime     @default(now())
+
+  user   User    @relation(fields: [userId], references: [id])
+  course Course? @relation(fields: [courseId], references: [id])
+
+  @@map("documents")
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  amount           Float
+  currency         String        @default("eur")
+  status           PaymentStatus @default(PENDING)
+  stripePaymentId  String?       @unique
+  userId           String
+  courseId          String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("payments")
+}
