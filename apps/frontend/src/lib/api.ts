@@ -33,6 +33,10 @@ export const authApi = {
     fetcher('/api/auth/refresh', { method: 'POST', token: refreshToken }),
   logout: (token: string) =>
     fetcher('/api/auth/logout', { method: 'POST', token }),
+  forgotPassword: (email: string) =>
+    fetcher('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPassword: (token: string, password: string) =>
+    fetcher('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, newPassword: password }) }),
 };
 
 // ── Courses ──

@@ -49,17 +49,19 @@ enum DocumentType {
 // Models
 // ────────────────────────────────────
 model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  password       String
-  firstName      String
-  lastName       String
-  role           Role     @default(STUDENT)
-  avatar         String?
-  refreshToken   String?
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                    String   @id @default(uuid())
+  email                 String   @unique
+  password              String
+  firstName             String
+  lastName              String
+  role                  Role     @default(STUDENT)
+  avatar                String?
+  refreshToken          String?
+  isActive              Boolean  @default(true)
+  resetToken            String?
+  resetTokenExpiry      DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   // Relations
   coursesCreated  Course[]         @relation("CourseAuthor")
