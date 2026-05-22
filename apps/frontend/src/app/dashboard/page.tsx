@@ -159,64 +159,73 @@ function DashboardContent() {
           {/* Quick stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
-              { label: 'Cours', value: courses.length, icon: BookOpen, color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10' },
-              { label: 'En cours', value: courses.filter(c => c.status === 'PUBLISHED').length, icon: Play, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10' },
-              { label: 'Leçons', value: courses.reduce((acc, c) => acc + (c._count?.lessons || 0), 0), icon: GraduationCap, color: 'text-violet-500 bg-violet-50 dark:bg-violet-500/10' },
-              { label: 'Étudiants', value: '—', icon: Users, color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' },
-            ].map(({ label, value, icon: Icon, color }) => (
-              <Card key={label} className="p-4 flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center`}>
-                  <Icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold">{value}</p>
-                  <p className="text-xs text-muted-foreground">{label}</p>
-                </div>
-              </Card>
+              { label: 'Cours', value: courses.length, icon: BookOpen, color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10', href: '#courses' },
+              { label: 'En cours', value: courses.filter(c => c.status === 'PUBLISHED').length, icon: Play, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10', href: '#active-courses' },
+              { label: 'Leçons', value: courses.reduce((acc, c) => acc + (c._count?.lessons || 0), 0), icon: GraduationCap, color: 'text-violet-500 bg-violet-50 dark:bg-violet-500/10', href: '#lessons' },
+              { label: 'Étudiants', value: '—', icon: Users, color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10', href: '/dashboard/classrooms' },
+            ].map(({ label, value, icon: Icon, color, href }) => (
+              <Link key={label} href={href} className="group">
+                <Card className="p-4 flex items-center gap-4 cursor-pointer hover:shadow-md hover:border-primary/30 transition-all duration-200 h-full">
+                  <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center transition-transform group-hover:scale-110`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-2xl font-extrabold text-foreground">{value}</p>
+                    <p className="text-xs text-muted-foreground group-hover:text-primary transition-colors">{label}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1" />
+                </Card>
+              </Link>
             ))}
           </div>
 
           {/* Courses grid */}
-          {loadingCourses ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[...Array(6)].map((_, i) => <CourseCardSkeleton key={i} />)}
+          <div id="courses" className="scroll-mt-20">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold">Tous les cours</h2>
+              <span className="text-sm text-muted-foreground">{filtered.length} cours</span>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filtered.map((course) => (
-                <Link key={course.id} href={`/dashboard/courses/${course.id}`}>
-                  <Card hover className="overflow-hidden group">
-                    {/* Thumbnail */}
-                    <div className="h-40 bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-500/20 dark:to-accent-500/20 relative">
-                      {course.thumbnail && (
-                        <img src={course.thumbnail} alt="" className="w-full h-full object-cover" loading="lazy" />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <Badge variant="secondary" className="absolute top-3 left-3 text-[10px]">
-                        {course.status === 'PUBLISHED' ? '🟢 Publié' : '📝 Brouillon'}
-                      </Badge>
-                    </div>
-                    <div className="p-5 space-y-3">
-                      <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">{course.title}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{course.description}</p>
-                      <div className="flex items-center justify-between pt-2 border-t border-border">
-                        <span className="text-primary font-bold">{course.price}€</span>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <BookOpen className="w-3 h-3" /> {course._count?.lessons || 0} leçons
-                        </span>
+            {loadingCourses ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {[...Array(6)].map((_, i) => <CourseCardSkeleton key={i} />)}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {filtered.map((course) => (
+                  <Link key={course.id} href={`/dashboard/courses/${course.id}`}>
+                    <Card hover className="overflow-hidden group">
+                      {/* Thumbnail */}
+                      <div className="h-40 bg-gradient-to-br from-primary-100 to-accent-100 dark:from-primary-500/20 dark:to-accent-500/20 relative">
+                        {course.thumbnail && (
+                          <img src={course.thumbnail} alt="" className="w-full h-full object-cover" loading="lazy" />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <Badge variant="secondary" className="absolute top-3 left-3 text-[10px]">
+                          {course.status === 'PUBLISHED' ? '🟢 Publié' : '📝 Brouillon'}
+                        </Badge>
                       </div>
-                    </div>
-                  </Card>
-                </Link>
-              ))}
-              {filtered.length === 0 && (
-                <div className="col-span-full text-center py-16">
-                  <BookOpen className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-muted-foreground">Aucun cours trouvé.</p>
-                </div>
-              )}
-            </div>
-          )}
+                      <div className="p-5 space-y-3">
+                        <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">{course.title}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{course.description}</p>
+                        <div className="flex items-center justify-between pt-2 border-t border-border">
+                          <span className="text-primary font-bold">{course.price}€</span>
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <BookOpen className="w-3 h-3" /> {course._count?.lessons || 0} leçons
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+                {filtered.length === 0 && (
+                  <div className="col-span-full text-center py-16">
+                    <BookOpen className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                    <p className="text-muted-foreground">Aucun cours trouvé.</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </main>
       </div>
     </div>

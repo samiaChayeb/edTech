@@ -9,6 +9,7 @@ import { CoursesModule } from './courses/courses.module';
 import { ClassroomsModule } from './classrooms/classrooms.module';
 import { DocumentsModule } from './documents/documents.module';
 import { PaymentsModule } from './payments/payments.module';
+import { MailModule } from './mail/mail.module';
 import { ChatGateway } from './gateway/chat.gateway';
 
 @Module({
@@ -16,6 +17,7 @@ import { ChatGateway } from './gateway/chat.gateway';
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }]),
     PrismaModule,
+    MailModule,
     AuthModule,
     UsersModule,
     CoursesModule,
