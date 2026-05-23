@@ -1,0 +1,13 @@
+{
+  "$schema": "https://vercel.com/schemas/vercel.json",
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": [
+    {
+      "key": "NEXT_PUBLIC_API_URL",
+      "value": "https://your-app.onrender.com",
+      "description": "URL du backend NestJS sur Render"
+    }
+  ]
+}

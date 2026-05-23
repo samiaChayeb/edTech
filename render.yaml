@@ -1,0 +1,23 @@
+# Configuration pour Render.com
+# Mettez ce fichier à la racine du repository
+
+services:
+  - type: web
+    name: edtech-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm run build --workspace=apps/backend
+    startCommand: npm run start:prod --workspace=apps/backend
+    rootDir: apps/backend
+    envVars:
+      - key: DATABASE_URL
+        scope: build,runtime
+      - key: JWT_SECRET
+        scope: runtime
+      - key: JWT_REFRESH_SECRET
+        scope: runtime
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
