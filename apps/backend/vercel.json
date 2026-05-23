@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm run build --workspace=apps/backend",
+  "outputDirectory": "apps/backend/dist",
+  "installCommand": "npm ci && npm run db:generate --workspace=apps/backend",
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret",
+    "JWT_REFRESH_SECRET": "@jwt_refresh_secret",
+    "NODE_ENV": "production"
+  }
+}
