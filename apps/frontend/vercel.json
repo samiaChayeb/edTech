@@ -4,6 +4,6 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://ed-tech-backend-red.vercel.app/api"
+    "NEXT_PUBLIC_API_URL": "https://ed-tech-backend-red.vercel.app"
   }
 }
