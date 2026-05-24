@@ -6,7 +6,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { v4 as uuid } from 'uuid';
-import { extname } from 'path';
+import { extname, join } from 'path';
+import { tmpdir } from 'os';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -16,7 +17,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
 const videoStorage = diskStorage({
-  destination: './uploads/videos',
+  destination: join(tmpdir(), 'uploads', 'videos'),
   filename: (_req, file, cb) => cb(null, `${uuid()}${extname(file.originalname)}`),
 });
 
@@ -74,6 +75,6 @@ export class CoursesController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('video', { storage: videoStorage, limits: { fileSize: 500 * 1024 * 1024 } }))
   uploadVideo(@Param('lessonId') lessonId: string, @UploadedFile() file: Express.Multer.File) {
-    return this.coursesService.uploadVideo(lessonId, `/uploads/videos/${file.filename}`);
+    return this.coursesService.uploadVideo(lessonId, file.path);
   }
 }

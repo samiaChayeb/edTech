@@ -7,12 +7,13 @@ import { diskStorage } from 'multer';
 import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
 import { v4 as uuid } from 'uuid';
 import { extname, join } from 'path';
+import { tmpdir } from 'os';
 import { Response } from 'express';
 import { DocumentsService } from './documents.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 const docStorage = diskStorage({
-  destination: './uploads/documents',
+  destination: join(tmpdir(), 'uploads', 'documents'),
   filename: (_req: any, file: any, cb: any) => cb(null, `${uuid()}${extname(file.originalname)}`),
 });
 
